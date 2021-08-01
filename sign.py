@@ -3,18 +3,20 @@ import json
 from bs4 import BeautifulSoup
 import requests
 import configparser
+
+from requests.api import post
 import login
 import getBeijingTime
 import mail
 
 # 构造信息
-def makeInfo(config):
+def makeInfo(config, form_id):
     head = {
         'User-Agent' :"Mozilla/5.0"
     }
 
     body = {
-        'form_id': config["QianDao"]["form_id"],
+        'form_id': form_id,
         'formdata[v]': config["QianDao"]["v"],
         'formdata[a]': config["QianDao"]["a"],
         'formdata[b]': config["QianDao"]["b"],
@@ -58,10 +60,10 @@ def Msg(signRes):
     return msg
 
 # 签到Post
-def Post(session, postApi, config, cookies):
+def Post(session, postApi, config, cookies, form_id):
     
     # 获取信息
-    head, body = makeInfo(config)
+    head, body = makeInfo(config, form_id)
     # 签到Post
     signRes = session.post(postApi, headers=head, data = body, cookies = cookies)
     # print(signRes.text)
@@ -102,6 +104,13 @@ def sendMail(Info, msg, config):
 '''
     mail.sendMail(config, htmlMsg)
 
+# 获取form_id
+def getFormId(postUrl, cookies):
+    res = requests.get(postUrl,headers={'User-Agent':"Mozilla\\5.0"}, cookies=cookies)
+    soup = BeautifulSoup(res.text,'html.parser')
+    form_id = soup.input['value']
+    return form_id
+
 def sign():
     session = requests.session()
     config = configparser.RawConfigParser()
@@ -118,7 +127,8 @@ def sign():
     # 签到
     # cookies
     cookies = Info["cookies"]
-    signRes = Post(session, postUrl, config, cookies)
+    form_id = getFormId(postUrl, cookies)
+    signRes = Post(session, postUrl, config, cookies, form_id)
     # 打印用户提示信息
     msg = Msg(signRes)
     if config["Log"]["signLog"] == 'on':
