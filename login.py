@@ -84,7 +84,7 @@ def loginUseCookie(config, session):
 def returnInfo(response):
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    url = soup.find_all('a')[6].attrs['href']
+    url = soup.find_all('a')[7].attrs['href']
     
     # 打卡Post Url
     daka_url = "https://htu.banjimofang.com"+url
