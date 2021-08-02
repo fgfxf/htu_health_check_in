@@ -88,7 +88,7 @@ def sendMail(Info, msg, config):
         
         <h1>健康打卡推送</h1>
         <h2>本程序完全开源免费<h2>
-        <h2>代码仓库：<a href="https://github.com/easechen/htu_health_check_in">GitHub</a>, <a href="https://gitee.com/easechen/htu_health_check_in">Gitee(国内镜像)</a></h2>
+        <h2>代码仓库：<a href="https://github.com/easechen/htu_health_check_in">GitHub</a>,<a href="https://hub.fastgit.org/easechen/htu_health_check_in">镜像</a></h2>
     </head>
     <body>
         <hr>
@@ -99,6 +99,9 @@ def sendMail(Info, msg, config):
         <br>
         <br>
         时间：<font size="3" color="red">{getBeijingTime.getBeijingTimeStr()}</font>
+        <br>
+        <br>
+        如有问题请提出Issue或者PR。
     </body>
 </html>
 '''

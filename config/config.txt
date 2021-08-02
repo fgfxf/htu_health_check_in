@@ -1,7 +1,7 @@
 # 用户信息
 [UserInfo] 
 # 学号
-userid = 19******
+userid = 1*******
 # 姓名
 name = 姓名
 
