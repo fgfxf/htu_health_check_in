@@ -29,9 +29,7 @@ Table of Contents
 
 ## 置顶
 
-推送邮箱中显示`打卡成功`，但记录中没有出现的Bug已经修复，具体见[this commit](https://github.com/easechen/htu_health_check_in/commit/d112724974b45b9204dbe369dc8d0ca9c5e9f0a3)。
-
-请下载使用最新代码以解决此问题。
+表单数据新增`当前位置是否在中高风险区`，已修复。请使用最新代码。
 
 ## 介绍
 
