@@ -17,6 +17,7 @@ def makeInfo(config, form_id):
 
     body = {
         'form_id': form_id,
+        'formdata[w]': config["QianDao"]['w'],
         'formdata[v]': config["QianDao"]["v"],
         'formdata[a]': config["QianDao"]["a"],
         'formdata[b]': config["QianDao"]["b"],
