@@ -1,7 +1,7 @@
 # -*- coding:UTF-8 -*-
 import json
 import requests
-import orc
+import ocr
 import configparser
 from bs4 import BeautifulSoup
 
@@ -34,7 +34,7 @@ def isLoginSuccess(response):
 # 重新登录
 def reLogin(config, session):
     while True:
-        checkcode, imgRes = orc.getVerCode(config["System"]['verCodeApi'])
+        checkcode, imgRes = ocr.getVerCode(config["System"]['verCodeApi'])
         head, body = makeInfo(config["UserInfo"]['userid'], config["UserInfo"]['name'], checkcode)
         session.get(config["System"]['loginGetApi'])
         # 登录

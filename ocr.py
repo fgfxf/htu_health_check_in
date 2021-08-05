@@ -46,9 +46,9 @@ def getAccessToken(ApiKey, SecretKey):
             # 否则直接返回
             return response.json()["access_token"]
         else:
-            print("Error in getAccessToken of orc.py!")
+            print("Error in getAccessToken of ocr.py!")
 
-def orcNumber(ApiKey, SecretKey, img):
+def ocrNumber(ApiKey, SecretKey, img):
     request_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/numbers"
     # request_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/accurate_basic"
     # 二进制方式打开图片文件
@@ -59,7 +59,7 @@ def orcNumber(ApiKey, SecretKey, img):
     access_token = getAccessToken(ApiKey, SecretKey)
     # print(f'access_token={access_token}')
     if access_token == None:
-        print("未设置ORC，请参照文档于配置文件中设置！")
+        print("未设置OCR，请参照文档于配置文件中设置！")
         exit(1)
     request_url = request_url + "?access_token=" + access_token
     headers = {'content-type': 'application/x-www-form-urlencoded'}
@@ -67,20 +67,20 @@ def orcNumber(ApiKey, SecretKey, img):
     if response:
         return response.json()
     else:
-        print("Error in orcNumbner of orc.py!")
+        print("Error in ocrNumbner of ocr.py!")
 
 # 日志写入函数
 def wirteLog(words_result):
     # 获取当前本地时间
     localtime = getBeijingTime.getBeijingTimeStr()
-    with open('./log/orcLog.txt', 'a+') as f:
+    with open('./log/ocrLog.txt', 'a+') as f:
         f.writelines(localtime +' ' + words_result+'\n')
 
 def getVerCode(url):
     config = configparser.RawConfigParser()
     config.read("./config/config.txt", encoding="UTF-8")
-    ApiKey = config["ORC"]["ApiKey"]
-    SecretKey = config["ORC"]["SecretKey"]
+    ApiKey = config["OCR"]["ApiKey"]
+    SecretKey = config["OCR"]["SecretKey"]
     success = False
     while success == False:
         # 传入URL，获取图片和Cookies
@@ -89,17 +89,17 @@ def getVerCode(url):
         if config["VerImg"]["saveImg"] == 'on':
             # 保存图片
             saveImg(img)
-        orcRes = orcNumber(ApiKey, SecretKey, img)
-        # orcRes = 2342
+        ocrRes = ocrNumber(ApiKey, SecretKey, img)
+        # ocrRes = 2342
         # 写日志
-        if config["Log"]["orcLog"] == 'on':
-            wirteLog(str(orcRes))
+        if config["Log"]["ocrLog"] == 'on':
+            wirteLog(str(ocrRes))
         try:
-            verCode = orcRes["words_result"][0]["words"]
+            verCode = ocrRes["words_result"][0]["words"]
             # return imgRes
             return verCode, imgRes
         except:
-            print("Error: getVerCode in orc.py")
+            print("Error: getVerCode in ocr.py")
             continue
 
 if __name__ == '__main__':

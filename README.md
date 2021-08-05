@@ -14,7 +14,7 @@ Table of Contents
    * [使用指南](#使用指南)
       * [用户信息 UserInfo](#用户信息-userinfo)
       * [邮箱配置 Mail](#邮箱配置-mail)
-      * [百度智云ORC key](#百度智云orc-key)
+      * [百度智云ocr key](#百度智云ocr-key)
       * [签到信息](#签到信息)
       * [日志和开启Cookies存储](#日志和开启cookies存储)
    * [部署](#部署)
@@ -89,11 +89,11 @@ pip install -r requirements.txt
 
 ![3](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715135230.png)
 
-### 百度智云ORC key
+### 百度智云ocr key
 
 ![image-20210715140017294](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715140017.png)
 
-由于登录使用了图形验证码进行验证，所以需要进行ORC识别实现自动登录功能。这里使用百度智云的ORC服务，认证用户每月有1000次的免费次数，对于30天打卡足够了。
+由于登录使用了图形验证码进行验证，所以需要进行ocr识别实现自动登录功能。这里使用百度智云的ocr服务，认证用户每月有1000次的免费次数，对于30天打卡足够了。
 
 在这里，我们需要获取`ApiKey`和`SecretKey`这两个键的值。
 

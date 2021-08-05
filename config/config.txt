@@ -19,8 +19,8 @@ mail_user = ****@qq.com
 #口令（授权码）
 mail_pass = kskXM*****
 
-# 百度智云 orc key
-[ORC]
+# 百度智云 ocr key
+[OCR]
 ApiKey = GLsslGi*****
 SecretKey = 9eVz2Kdh*****
 
@@ -76,7 +76,7 @@ u   =
 # 开启为 on， 关闭为 off
 # 日志
 [Log]
-orcLog = on
+ocrLog = on
 signLog = on
 
 # 是否启用Cookies存储
@@ -87,7 +87,7 @@ saveCookie = on
 [VerImg]
 saveImg = off
 
-# 是否存储orc token
+# 是否存储ocr token
 [token]
 saveToken = on
 
