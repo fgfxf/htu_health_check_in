@@ -83,7 +83,7 @@ def log(Info, msg):
         f.write(str(logDict) + '\n')
 
 def getVersion():
-    url = ""
+    url = "https://raw.fastgit.org/easechen/htu_health_check_in/master/version"
     res = requests.get(url, headers={"User-Agent":"Mozilla/5.0"})
     js = json.loads(res.text)
     return js
@@ -112,9 +112,7 @@ def sendMail(Info, msg, config, version):
         <br>
         时间：<font size="3" color="red">{getBeijingTime.getBeijingTimeStr()}</font>
         <br>
-        <br>
         {updateMsg}
-        <br>
         <br>
         如有问题请提出Issue或者PR。
     </body>
