@@ -92,6 +92,7 @@ def sendMail(Info, msg, config, version):
     updateMsg = ''
     if( version["version"] != "8.20"):
         updateMsg = version["msg"]
+        print(version)
     htmlMsg = f'''
 <html>
     <title>健康打卡推送</title>
@@ -112,7 +113,7 @@ def sendMail(Info, msg, config, version):
         <br>
         时间：<font size="3" color="red">{getBeijingTime.getBeijingTimeStr()}</font>
         <br>
-        {updateMsg}
+        <font size="6" color="red">{updateMsg} </font>
         <br>
         如有问题请提出Issue或者PR。
     </body>
