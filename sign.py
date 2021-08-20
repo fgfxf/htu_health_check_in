@@ -17,6 +17,8 @@ def makeInfo(config, form_id):
 
     body = {
         'form_id': form_id,
+        'formdata[x]': config["QianDao"]["x"],
+        'formdata[y]': config["QianDao"]["y"],
         'formdata[w]': config["QianDao"]['w'],
         'formdata[v]': config["QianDao"]["v"],
         'formdata[a]': config["QianDao"]["a"],
@@ -80,7 +82,16 @@ def log(Info, msg):
     with open("./log/loginLog.text", "a+", encoding="UTF-8") as f:
         f.write(str(logDict) + '\n')
 
-def sendMail(Info, msg, config):
+def getVersion():
+    url = ""
+    res = requests.get(url, headers={"User-Agent":"Mozilla/5.0"})
+    js = json.loads(res.text)
+    return js
+
+def sendMail(Info, msg, config, version):
+    updateMsg = ''
+    if( version["version"] != "8.20"):
+        updateMsg = version["msg"]
     htmlMsg = f'''
 <html>
     <title>健康打卡推送</title>
@@ -100,6 +111,9 @@ def sendMail(Info, msg, config):
         <br>
         <br>
         时间：<font size="3" color="red">{getBeijingTime.getBeijingTimeStr()}</font>
+        <br>
+        <br>
+        {updateMsg}
         <br>
         <br>
         如有问题请提出Issue或者PR。
@@ -133,12 +147,13 @@ def sign():
     cookies = Info["cookies"]
     form_id = getFormId(postUrl, cookies)
     signRes = Post(session, postUrl, config, cookies, form_id)
+    version = getVersion()
     # 打印用户提示信息
     msg = Msg(signRes)
     if config["Log"]["signLog"] == 'on':
         log(Info, msg)
     if config["Mail"]["isOpen"] == 'on':
-        sendMail(Info, msg, config)
+        sendMail(Info, msg, config, version)
 
 if __name__=='__main__':
     sign()
