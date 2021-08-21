@@ -4,6 +4,28 @@
 >
 > 如果您使用本程序，即视为您同意上述条款。
 
+## 置顶
+
+由于官方关闭了 Web 端的登录接口，所以被迫采用了其他的登录方法，请大家查看文档，更换最新代码。
+
+这里我有几句话要说，原本鄙人做这些只是为了方便大家，免受打卡之苦，**但有些人却利用网站安全系数低爆破管理员密码，这已经触犯了法律！！**进而导致了官方关闭了接口！！
+
+我想说的是，**技术无罪，但是使用技术的人可能犯罪！！**技术存在的价值就是为了让我们的生活更加便利，更加丰富多彩，而不是相互攻击，用它来做那些犯罪的勾当！
+
+另外，还请使用者们低调，人要有自知之明。
+
+祝朋友们身体健康，疫情尽快过去。
+
+## 更新说明
+
+1. 更换了登录验证方式
+2. 增加了`pyexecjs`库
+3. 增加了一个选项：`学生身份`
+4. 去除了OCR的功能以及相关配置
+5. 用户登录信息改变，使用学号和[门户网站](http://authserver2.htu.edu.cn/authserver/login)密码（具体请看下文）
+6. 去除了日志功能以及相关配置
+7. 签到失败仍会发送提醒邮件
+
 Table of Contents
 =================
 
@@ -13,9 +35,7 @@ Table of Contents
    * [使用指南](#使用指南)
       * [用户信息 UserInfo](#用户信息-userinfo)
       * [邮箱配置 Mail](#邮箱配置-mail)
-      * [百度智云ocr key](#百度智云ocr-key)
       * [签到信息](#签到信息)
-      * [日志和开启Cookies存储](#日志和开启cookies存储)
    * [部署](#部署)
       * [自己的服务器](#自己的服务器)
          * [修改配置文件](#修改配置文件)
@@ -44,6 +64,7 @@ Table of Contents
    2. `PyEmail`
    3. `beautifulsoup4`
    4. `configparser`
+   5. `pyexecjs`
 
 统一安装，使用`requirements.txt`文件在项目根目录中，执行下面的命令即可安装所需的所有包。
 
@@ -56,9 +77,9 @@ pip install -r requirements.txt
 > 如果速度慢，可将本仓库地址修改为镜像地址 https://hub.fastgit.org/easechen/htu_health_check_in.git
 > 如果遇到Bug，请克隆最新仓库代码，或者提出Issue
 
-本程序用户只需修改位于`/config/config.txt`的配置文件即可，然后使用Python解释运行根目录下的`/run.py`，如图所示：
+本程序用户只需修改位于`/config/config.txt`的配置文件即可，然后使用Python解释运行根目录下的`/run.py`，如图所示，你需要修改三个项目：
 
-![1](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715135219.png)
+![](https://pic.chens.life/images/2021/08/22/20210822030935.png)
 
 下面将进行详细讲解如何获取和填写。
 
@@ -66,9 +87,9 @@ pip install -r requirements.txt
 
 ### 用户信息 UserInfo
 
-![image-20210715135928868](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715135928.png)
+![image-20210822031027863](https://pic.chens.life/images/2021/08/22/20210822031027.png)
 
-这里填写你的学号和真实姓名。userid是学号，name是姓名。
+这里填写你的学号和[门户网站](http://authserver2.htu.edu.cn/authserver/login)密码。`username`是学号，`password`是密码。
 
 ### 邮箱配置 Mail
 
@@ -82,37 +103,11 @@ pip install -r requirements.txt
 
 ![3](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715135230.png)
 
-### 百度智云ocr key
-
-![image-20210715140017294](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715140017.png)
-
-由于登录使用了图形验证码进行验证，所以需要进行ocr识别实现自动登录功能。这里使用百度智云的ocr服务，认证用户每月有1000次的免费次数，对于30天打卡足够了。
-
-在这里，我们需要获取`ApiKey`和`SecretKey`这两个键的值。
-
-打开网址 https://cloud.baidu.com/doc/OCR/s/9k3h7xuv6 点击领取免费资源，如果未注册登录则先注册登录。
-
-![4](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715135236.png)
-
-然后全选，全部领取即可。跳转到资源列表，点击**应用列表**，点击**新建应用**，输入应用名称即可获得`API Key`和`Secret Key`。只要保证数字识别在勾选着就可以了。
-
->  注意：未实名用户只有200次/月，请进行个人中心进行的个人实名认证！
-
-![5](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715135240.png)
-
-![6](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715135247.png)
-
-![7](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715135254.png)
-
 ### 签到信息
 
 下面的就是签到打卡的信息了。按照注释的说明进行填写即可。在这里，0代表**是**，1代表**否**，其余的看注释即可。位置信息复制上一次打卡的定位信息。
 
-### 日志，Cookies 等项目的存储控制
-
-默认开启日志和Cookies登录，开启为`on`，关闭为`off`。可以根据需要配置。如果部署在自己的服务器中则建议开启，这样可以减少资源的消耗。但是如果部署在云函数中，由于程序没有写入权限，则需要将下列功能全部关闭`off`。具体后面的部署小节中会进行说明。
-
-![image-20210715232321380](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715232321.png)
+> 注意！一定要看注释！一定要看注释！！
 
 ## 部署
 
@@ -162,10 +157,6 @@ crontab -e
 
 ![image-20210715171324625](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715171324.png)
 
-克隆本仓库，并参考上文中的**使用指南**进行配置，并将下列配置全部改为`off`！！这很重要！！
-
-![image-20210715172157112](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715172157.png)
-
 之后上传该文件夹。在`执行方法`中填入`run.yunRun`。
 
 ![image-20210715172333021](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715172333.png)
@@ -202,7 +193,7 @@ crontab -e
 
 ## 几个要点
 
-1. 这些资源都是利用免费额度内的资源，请不要随便扩散和传播自己的token和SecretKey，否则后果自负。
+1. 这些资源都是利用免费额度内的资源，如果使用过量，责任自负。
 2. 请在本地测试好配置文件无误后在进行云函数的上传操作，以免更改麻烦。
 3. 如果使用云函数，请必须按照说明进行更改配置文件`config.txt`最后的设置！！！如果在自己的服务器中，则建议开启，以减少资源消耗。
 4. 配置文件中，0代表**是**，1代表**否**
