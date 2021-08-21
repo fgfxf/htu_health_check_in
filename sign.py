@@ -3,8 +3,6 @@ import json
 from bs4 import BeautifulSoup
 import requests
 import configparser
-
-from requests.api import post
 import login
 import getBeijingTime
 import mail
@@ -12,11 +10,12 @@ import mail
 # 构造信息
 def makeInfo(config, form_id):
     head = {
-        'User-Agent' :"Mozilla/5.0"
+        'User-Agent' :"Mozilla/5.0 (Linux; Android 10; ELE-AL00 Build/HUAWEIELE-AL00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045713 Mobile Safari/537.36 MMWEBID/8101 MicroMessenger/8.0.10.1960(0x28000A3D) Process/tools WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64"
     }
 
     body = {
         'form_id': form_id,
+        'formdata[z]': config["QianDao"]["z"],
         'formdata[x]': config["QianDao"]["x"],
         'formdata[y]': config["QianDao"]["y"],
         'formdata[w]': config["QianDao"]['w'],
@@ -73,14 +72,14 @@ def Post(session, postApi, config, cookies, form_id):
     # print(signRes.url)
     return signRes
 
-def log(Info, msg):
-    logDict = {
-        "time": getBeijingTime.getBeijingTimeStr(),
-        "user": Info["name"],
-        "msg": msg
-    }
-    with open("./log/loginLog.text", "a+", encoding="UTF-8") as f:
-        f.write(str(logDict) + '\n')
+# def log(Info, msg):
+#     logDict = {
+#         "time": getBeijingTime.getBeijingTimeStr(),
+#         "user": Info["name"],
+#         "msg": msg
+#     }
+#     with open("./log/loginLog.text", "a+", encoding="UTF-8") as f:
+#         f.write(str(logDict) + '\n')
 
 def getVersion():
     url = "https://raw.fastgit.org/easechen/htu_health_check_in/master/version"
@@ -88,42 +87,68 @@ def getVersion():
     js = json.loads(res.text)
     return js
 
-def sendMail(Info, msg, config, version):
+def sendMail(Info, msg, config, version, isSuccess):
     updateMsg = ''
-    if( version["version"] != "8.20"):
+    if( version["version"] != "8.22"):
         updateMsg = version["msg"]
         print(version)
-    htmlMsg = f'''
-<html>
-    <title>健康打卡推送</title>
-    <div ></div>
-    <head>
+    if isSuccess:
+        htmlMsg = f'''
+    <html>
+        <title>健康打卡推送</title>
+        <div ></div>
+        <head>
+            
+            <h1>健康打卡推送</h1>
+            <h2>本程序完全开源免费<h2>
+            <h2>代码仓库：<a href="https://github.com/easechen/htu_health_check_in">GitHub</a>,<a href="https://hub.fastgit.org/easechen/htu_health_check_in">镜像</a></h2>
+        </head>
+        <body>
+            <hr>
+            你好，来自 <font size="6" color="red">{Info['college']} 的 {Info['name']} !</font>
+            <br>
+            <br>
+            打卡信息：<font size="4" color="red">{msg}</font>
+            <br>
+            <br>
+            时间：<font size="3" color="red">{getBeijingTime.getBeijingTimeStr()}</font>
+            <br>
+            <font size="6" color="red">{updateMsg} </font>
+            <br>
+            如有问题请提出Issue或者PR。
+        </body>
+    </html>
+'''
+    else:
+        htmlMsg = f'''
+        <html>
+        <title>健康打卡推送</title>
+        <div ></div>
+        <head>
+            
+            <h1>健康打卡推送</h1>
+            <h2>本程序完全开源免费<h2>
+            <h2>代码仓库：<a href="https://github.com/easechen/htu_health_check_in">GitHub</a>,<a href="https://hub.fastgit.org/easechen/htu_health_check_in">镜像</a></h2>
+        </head>
+        <body>
+            <hr>
+            <font size="6" color="red">错误！请检查配置或者更新最新代码！！</font>
+            <br>
+            <br>
+            时间：<font size="3" color="red">{getBeijingTime.getBeijingTimeStr()}</font>
+            <br>
+            <font size="6" color="red">{updateMsg} </font>
+            <br>
+            如有问题请提出Issue或者PR。
+        </body>
+    </html>
         
-        <h1>健康打卡推送</h1>
-        <h2>本程序完全开源免费<h2>
-        <h2>代码仓库：<a href="https://github.com/easechen/htu_health_check_in">GitHub</a>,<a href="https://hub.fastgit.org/easechen/htu_health_check_in">镜像</a></h2>
-    </head>
-    <body>
-        <hr>
-        你好，来自 <font size="6" color="red">{Info['college']} 的 {Info['name']} !</font>
-        <br>
-        <br>
-        打卡信息：<font size="4" color="red">{msg}</font>
-        <br>
-        <br>
-        时间：<font size="3" color="red">{getBeijingTime.getBeijingTimeStr()}</font>
-        <br>
-        <font size="6" color="red">{updateMsg} </font>
-        <br>
-        如有问题请提出Issue或者PR。
-    </body>
-</html>
 '''
     mail.sendMail(config, htmlMsg)
 
 # 获取form_id
 def getFormId(postUrl, cookies):
-    res = requests.get(postUrl,headers={'User-Agent':"Mozilla\\5.0"}, cookies=cookies)
+    res = requests.get(postUrl,headers={'User-Agent':"Mozilla/5.0 (Linux; Android 10; ELE-AL00 Build/HUAWEIELE-AL00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045713 Mobile Safari/537.36 MMWEBID/8101 MicroMessenger/8.0.10.1960(0x28000A3D) Process/tools WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64"}, cookies=cookies)
     soup = BeautifulSoup(res.text,'html.parser')
     form_id = soup.input['value']
     return form_id
@@ -132,10 +157,12 @@ def sign():
     session = requests.session()
     config = configparser.RawConfigParser()
     config.read("./config/config.txt", encoding="UTF-8")
+    version = getVersion()
     # 登录
     Info = login.Login()
     # 登录失败
     if Info == False:
+        sendMail(None, None, config, version, False)
         return False
 
     print(f"你好，来自 {Info['college']} 的 {Info['name']} !")
@@ -146,13 +173,11 @@ def sign():
     cookies = Info["cookies"]
     form_id = getFormId(postUrl, cookies)
     signRes = Post(session, postUrl, config, cookies, form_id)
-    version = getVersion()
+    
     # 打印用户提示信息
     msg = Msg(signRes)
-    if config["Log"]["signLog"] == 'on':
-        log(Info, msg)
     if config["Mail"]["isOpen"] == 'on':
-        sendMail(Info, msg, config, version)
+        sendMail(Info, msg, config, version, True)
 
 if __name__=='__main__':
     sign()

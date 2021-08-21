@@ -1,91 +1,53 @@
-# -*- coding:UTF-8 -*-
-import json
 import requests
-import ocr
-import configparser
 from bs4 import BeautifulSoup
+from encrypt import getEncryptedString
+import configparser
 
-# 构造登录数据
-def makeInfo(userid, name, checkcode):
+def makeInfo(username, encryptedPassword, lt):
     head = {
-        'User-Agent' :"Mozilla/5.0"
+        "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
     }
     body = {
-        'no': userid,
-        'name': name,
-        'checkcode': checkcode
+        "username":username,
+        "password":encryptedPassword,
+        "lt":lt,
+        "dllt":"userNamePasswordLogin",
+        "execution":"e1s1",
+        "_eventId":"submit",
+        "rmShown":"1"
     }
-    return head, body
 
-# 验证是否登录成功
-def isLoginSuccess(response):
-    if "验证码错误，请重试" in response.text:
-        print("验证码错误，正在重试。。。")
-        return "VerErr"
-    elif "登陆失败！信息验证不通过（验证码正确，提交的信息不正确）" in response.text:
-        print("登陆失败！信息验证不通过（验证码正确，提交的信息不正确）")
+    return {
+        "head": head,
+        "body": body
+    }
+
+def getpwdDefalutEncryptSalt( soup ):
+    input = soup.find_all('input')
+    pwdDefalutEncryptSalt = input[9]['value']
+    return pwdDefalutEncryptSalt
+
+def getlt( soup ):
+    input = soup.find_all('input')
+    lt = input[4]['value']
+    return lt
+
+def isLoginSuccess(res):
+    if res.url != "http://authserver2.htu.edu.cn/authserver/index.do":
         return False
-    elif "http://login.banjimofang.com/fields/login/student/6" == response.url:
-        print("登录失效，重新登录！")
-        return False
-    else:
+    return True
+
+def isYdxgLoginSuccess(res):
+    if "course" in res.url:
+        print("移动学工 登录成功！")
         return True
-
-# 重新登录
-def reLogin(config, session):
-    while True:
-        checkcode, imgRes = ocr.getVerCode(config["System"]['verCodeApi'])
-        head, body = makeInfo(config["UserInfo"]['userid'], config["UserInfo"]['name'], checkcode)
-        session.get(config["System"]['loginGetApi'])
-        # 登录
-        response = session.post(config["System"]['loginPostApi'], headers=head, data=body, cookies=imgRes.cookies)
-        # print(response.text)
-        # print(response.url)
-        # 如果登录成功
-        isSuccess = isLoginSuccess(response)
-        if isSuccess == True:
-            if config["Cookie"]["saveCookie"] == 'on':
-                # 更新Cookies文件
-                with open("./cookies/cookies.txt", "w") as f:
-                    f.write(str(response.cookies.get_dict()).replace("'",'"'))
-            # 返回课程主页的 response
-            return response
-        # 如果是验证码错误，则重试
-        elif isSuccess == "VerErr":
-            continue
-        # 其他错误，则返回
-        else:
-            return False
-
-# 使用Cookies进行登录
-def loginUseCookie(config, session):
-    # 尝试打开cookies文件，如果不存在则返回False
-    try:
-        f = open("./cookies/cookies.txt", "r", encoding="UTF-8")
-    except:
-        # 获取失败
-        print("cookies文件不存在，正在重新登录！")
-        return False
-    # 如果没有异常
-    else:
-        cookies = json.loads(f.read())
-        # 获取主页面
-        indexRes = session.post(str(config["System"]['indexApi']),headers={"User-Agent":"Mozilla/5.0"}, cookies=cookies)
-        # print(indexRes.text)
-        # print(indexRes.url)
-        if isLoginSuccess(indexRes) == True:
-            # 返回response
-            return indexRes
-        else:
-            return False
+    return False
 
 # 返回用户信息的字典
 # 包括 data_post_url college name cookies
 def returnInfo(response):
     soup = BeautifulSoup(response.text, 'html.parser')
-
     url = soup.find_all('a')[7].attrs['href']
-    
     # 打卡Post Url
     daka_url = "https://htu.banjimofang.com"+url
 
@@ -107,46 +69,52 @@ def returnInfo(response):
     }
 
     return userInfo
-'''
-登录成功则返回包含用户信息和健康签到的Post Api的Dict，否则返回 False
-这些key分别是
-    daka_post_url
-    college
-    name
-    cookies
-'''
+
 def Login():
-    session = requests.session()
-    # 读取配置文件
+    # read config file
     config = configparser.RawConfigParser()
     config.read("./config/config.txt", encoding="UTF-8")
-    # userConfig = config.getUserConfig()
-    # systemConfig = config.getSystemConfig()
-    # 如果开启Cookie
-    if config["Cookie"]["saveCookie"] == 'on':
-        # 首先使用cookies进行登录
-        res = loginUseCookie(config, session)
-        if res:
-            print("Cookies登录成功！")
-            return returnInfo(res)
+
+    session = requests.Session()
+    url = "http://authserver2.htu.edu.cn/authserver/login"
+    res = session.get(url, headers={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"})
+    cookies = res.cookies
+    soup = BeautifulSoup(res.text, "html.parser")
+    pwdDefaultEncryptSalt = getpwdDefalutEncryptSalt( soup )
+    lt = getlt( soup )
+    # encrypting
+    encryptedPassword = getEncryptedString(config["UserInfo"]["password"], pwdDefaultEncryptSalt)
+    # make Info
+    postInfo = makeInfo(config["UserInfo"]["username"],encryptedPassword, lt)
+    # logining
+    res = session.post(url, headers=postInfo['head'], data=postInfo['body'])
+    # print(res.url)
+    # if login success
+    if isLoginSuccess(res):
+        print("门户网站登录成功！")
+        # get cookies
+        cookies = session.cookies.get_dict()
+        CASTGC = cookies["CASTGC"]
+        # print(CASTGC)
+        # get Cookies CASTG of Chome website
+        cookies = {"CASTGC": CASTGC}
+        # ydxg logining
+        ydxgUrl = "http://authserver2.htu.edu.cn/authserver/login?service=http://ydxg.htu.edu.cn/land/caslogin?ref=%2Fquickgo%2Fx8k58999"
+        res = requests.get(ydxgUrl, headers={"User-Agent":"Mozilla/5.0 (Linux; Android 10; ELE-AL00 Build/HUAWEIELE-AL00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045713 Mobile Safari/537.36 MMWEBID/8101 MicroMessenger/8.0.10.1960(0x28000A3D) Process/tools WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64"}, cookies=cookies)
+        print(res.url)
+        # if ydxg login success
+        if isYdxgLoginSuccess(res):
+            # make user infomation
+            userInfo = returnInfo(res)
+            # print(userInfo)
+            return userInfo
         else:
-            res = reLogin(config, session)
-            if res:
-                print("重新登录成功！cookies文件已更新！")
-                return returnInfo(res)
-            else:
-                return False
-    # 如果没开启Cookie
+            print("移动学工 登录失败！")
     else:
-        res = reLogin(config, session)
-        if res:
-            print("登录成功！")
-            return returnInfo(res)
-        else:
-            return False
+        print("您提供的用户名或者密码有误")
+    # if have any error, then return False
+    return False
 
-
-
-if __name__=='__main__':
-    Info = Login()
-    print(Info)
+if __name__ == '__main__':
+    info = Login()
+    print(info)
