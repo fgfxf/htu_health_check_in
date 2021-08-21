@@ -188,9 +188,15 @@ crontab -e
 
 ![image-20210715173436632](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715173436.png)
 
-测试成功！显示返回的结果和日志。
+测试成功！点击日志查询，查看最近的日志是否执行成功且完整。
 
-![image-20210715173427491](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210715173427.png)
+![](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210821112033.png)
+
+![](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210821112515.png)
+
+最后将会显示`打卡成功`字样。
+
+![](https://cdn.jsdelivr.net/gh/easechen/blog-img/img/20210821112627.png)
 
 此时，此云函数将在触发器设置的时间点执行，进行打卡和推送。
 
