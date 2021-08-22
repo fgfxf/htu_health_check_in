@@ -93,7 +93,7 @@ def getVersion():
 
 def sendMail(Info, msg, config, version, isSuccess):
     updateMsg = ''
-    if( version["version"] != "8.22"):
+    if( version["version"] != "8.23"):
         updateMsg = version["msg"]
         print(version)
     if isSuccess:
