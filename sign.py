@@ -60,6 +60,8 @@ def Msg(signRes):
         msg = soup.find_all("div")[3].string
     elif "重复提交被暂停" in signRes.text:
         msg = "重复提交被暂停，1分钟内只能提交1次！"
+    elif "每日超过14:00无法再提交" in signRes.text:
+        msg = "每日超过14:00无法再提交"
     print(msg)
     return msg
 
