@@ -19,7 +19,7 @@
 ## 更新说明
 
 1. 更换了登录验证方式
-2. 增加了`pyexecjs`库
+2. 增加了`pyexecjs`库（本机需安装`Node.js`），云函数自带
 3. 增加了一个选项：`学生身份`
 4. 去除了OCR的功能以及相关配置
 5. 用户登录信息改变，使用学号和[门户网站](http://authserver2.htu.edu.cn/authserver/login)密码（具体请看下文）
@@ -65,8 +65,11 @@ Table of Contents
    3. `beautifulsoup4`
    4. `configparser`
    5. `pyexecjs`
+3. 需要Node.js环境
 
 统一安装，使用`requirements.txt`文件在项目根目录中，执行下面的命令即可安装所需的所有包。
+
+> 如果是云函数部署，则这些环境它都具备，不需要另行操作。
 
 ~~~bash
 pip install -r requirements.txt
