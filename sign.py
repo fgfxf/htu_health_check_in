@@ -177,6 +177,7 @@ def sign():
         sendMail(None, None, config, version, False)
         return False
 
+    print(Info)
     print(f"你好，来自 {Info['college']} 的 {Info['name']} !")
     # Post APi
     postUrl = Info["daka_post_url"]
