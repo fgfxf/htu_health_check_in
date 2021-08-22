@@ -3,9 +3,17 @@ import json
 from bs4 import BeautifulSoup
 import requests
 import configparser
-import login
+import platform
 import getBeijingTime
 import mail
+
+print(platform.platform())
+# Windows 10 x86_64 Python3.9.5
+if platform.system() == "Windows":
+    from bin.win import login
+# linux-x86_64-3.6
+elif platform.system() == "Linux":
+    from bin.linux import login
 
 # 构造信息
 def makeInfo(config, form_id):
