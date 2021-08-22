@@ -58,6 +58,8 @@ def Msg(signRes):
     msg = "打卡成功！"
     if "新增失败" in signRes.text:
         msg = soup.find_all("div")[3].string
+    elif "重复提交被暂停" in signRes.text:
+        msg = "重复提交被暂停，1分钟内只能提交1次！"
     print(msg)
     return msg
 
