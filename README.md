@@ -15,7 +15,6 @@
 ## 更新说明
 
 1. 更换了登录验证方式
-2. **目前程序仅支持 Linux x86 平台**
 3. 增加了`pyexecjs`库（本机需安装`Node.js`），云函数自带
 4. 增加了一个选项：`学生身份`
 5. 去除了OCR的功能以及相关配置
@@ -69,8 +68,8 @@ Table of Contents
 
 本程序由python编写，需要以下环境：
 
-1. Linux x86
-2. Python3.6或者以上
+1. Linux x86 或者 Windows x86_64 
+2. Linux Python3.6或者以上， windows需要Python3.9.5以上
 3. 以下python包：
    1. `requests`
    2. `PyEmail`
