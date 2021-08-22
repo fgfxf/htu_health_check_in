@@ -1,4 +1,4 @@
 {
-    "version":"8.23",
-    "msg":"更新提醒：新增了打卡结果类型"
+    "version":"8.24",
+    "msg":"更新提醒：增加了Windows-amd64的动态链接库，支持在Windows Python3.9.6及以上环境下运行。"
 }
