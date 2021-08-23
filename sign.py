@@ -63,8 +63,10 @@ def getCookieFromFile():
 # 打印提示信息
 def Msg(signRes):
     soup = BeautifulSoup(signRes.text, 'html.parser')
-    msg = "打卡成功！"
-    if "新增失败" in signRes.text:
+    msg = "打卡失败！！"
+    if "已填报记录" in signRes.text:
+        msg = "打卡成功！"
+    elif "新增失败" in signRes.text:
         msg = soup.find_all("div")[3].string
     elif "重复提交被暂停" in signRes.text:
         msg = "重复提交被暂停，1分钟内只能提交1次！"
