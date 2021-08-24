@@ -14,6 +14,9 @@ if platform.system() == "Windows":
 # linux-x86_64-3.6
 elif platform.system() == "Linux":
     from bin.linux import login
+# macos x86_64-3.9.6
+elif platform.system() == "Darwin":
+    from bin.macos import login
 
 # 构造信息
 def makeInfo(config, form_id):
