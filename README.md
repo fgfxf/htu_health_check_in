@@ -68,8 +68,8 @@ Table of Contents
 
 本程序由python编写，需要以下环境：
 
-1. Linux x86 或者 Windows x86_64 
-2. Linux Python3.6 或者以上， windows需要Python3.9.6以上！
+1. Linux x86 , Windows x86_64 ,MacOS11 x86_64
+2. Linux Python3.6 或者以上， windows和MacOS需要Python3.9.6或以上！
 3. 以下python包：
    1. `requests`
    2. `PyEmail`
