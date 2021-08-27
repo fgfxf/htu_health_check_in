@@ -1,4 +1,4 @@
 {
-    "version":"8.24.2",
-    "msg":"更新提醒：增加了对于MACOS11 x86_64的支持，Python version >= 3.9.6."
+    "version":"8.27",
+    "msg":"去掉了动态链接库，只需Python版本大于3.6即可运行。"
 }

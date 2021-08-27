@@ -3,25 +3,16 @@ import json
 from bs4 import BeautifulSoup
 import requests
 import configparser
-import platform
 import getBeijingTime
 import mail
+from Login import Login
 
-print(platform.platform())
-# Windows 10 x86_64 Python3.9.5
-if platform.system() == "Windows":
-    from bin.win import login
-# linux-x86_64-3.6
-elif platform.system() == "Linux":
-    from bin.linux import login
-# macos x86_64-3.9.6
-elif platform.system() == "Darwin":
-    from bin.macos import login
+user_agent = "Mozilla/5.0 (Linux; Android 10; ELE-AL00 Build/HUAWEIELE-AL00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045713 Mobile Safari/537.36 MMWEBID/8101 MicroMessenger/8.0.10.1960(0x28000A3D) Process/tools WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64"
 
 # 构造信息
 def makeInfo(config, form_id):
     head = {
-        'User-Agent' :"Mozilla/5.0 (Linux; Android 10; ELE-AL00 Build/HUAWEIELE-AL00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045713 Mobile Safari/537.36 MMWEBID/8101 MicroMessenger/8.0.10.1960(0x28000A3D) Process/tools WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64"
+        'User-Agent' :user_agent
     }
 
     body = {
@@ -89,16 +80,8 @@ def Post(session, postApi, config, cookies, form_id):
     # print(signRes.url)
     return signRes
 
-# def log(Info, msg):
-#     logDict = {
-#         "time": getBeijingTime.getBeijingTimeStr(),
-#         "user": Info["name"],
-#         "msg": msg
-#     }
-#     with open("./log/loginLog.text", "a+", encoding="UTF-8") as f:
-#         f.write(str(logDict) + '\n')
-
 def getVersion():
+    print("正在检查更新。。。")
     url = "https://raw.fastgit.org/easechen/htu_health_check_in/master/version"
     res = requests.get(url, headers={"User-Agent":"Mozilla/5.0"})
     js = json.loads(res.text)
@@ -106,7 +89,7 @@ def getVersion():
 
 def sendMail(Info, msg, config, version, isSuccess):
     updateMsg = ''
-    if( version["version"] != "8.24.2"):
+    if( version["version"] != "8.27"):
         updateMsg = version["msg"]
         print(version)
     if isSuccess:
@@ -165,7 +148,7 @@ def sendMail(Info, msg, config, version, isSuccess):
 
 # 获取form_id
 def getFormId(postUrl, cookies):
-    res = requests.get(postUrl,headers={'User-Agent':"Mozilla/5.0 (Linux; Android 10; ELE-AL00 Build/HUAWEIELE-AL00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045713 Mobile Safari/537.36 MMWEBID/8101 MicroMessenger/8.0.10.1960(0x28000A3D) Process/tools WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64"}, cookies=cookies)
+    res = requests.get(postUrl,headers={'User-Agent':user_agent}, cookies=cookies)
     soup = BeautifulSoup(res.text,'html.parser')
     form_id = soup.input['value']
     return form_id
@@ -176,7 +159,7 @@ def sign():
     config.read("./config/config.txt", encoding="UTF-8")
     version = getVersion()
     # 登录
-    Info = login.Login()
+    Info = Login()
     # 登录失败
     if Info == False:
         sendMail(None, None, config, version, False)
