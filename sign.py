@@ -78,13 +78,16 @@ def getVersion():
     url = "https://gitee.com/easechen/htu_health_check_in/raw/master/version"
     res = requests.get(url, headers={"User-Agent":"Mozilla/5.0"})
     js = json.loads(res.text)
-    return js
+    if( js["version"] != "8.27"):
+        print(js)
+        return js
+    else:
+        return False
 
 def sendMail(Info, msg, config, version, isSuccess):
     updateMsg = ''
-    if( version["version"] != "8.27"):
+    if( version != False ):
         updateMsg = version["msg"]
-        print(version)
     if isSuccess:
         htmlMsg = f'''
     <html>
