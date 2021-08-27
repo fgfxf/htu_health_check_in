@@ -47,13 +47,6 @@ def makeInfo(config, form_id):
 
     return head, body
 
-# 从文件中读取Cookies，返回Dict
-def getCookieFromFile():
-    cookies = ''
-    with open("./cookies/cookies.txt", "r", encoding="UTF-8") as f:
-        cookies = json.loads(f.read())
-    return cookies
-
 # 打印提示信息
 def Msg(signRes):
     soup = BeautifulSoup(signRes.text, 'html.parser')
@@ -153,27 +146,56 @@ def getFormId(postUrl, cookies):
     form_id = soup.input['value']
     return form_id
 
+# 返回用户信息的字典
+# 包括 data_post_url college name cookies
+def getUserInfo(cookie):
+    url = "https://htu.banjimofang.com/student"
+    response = requests.get(url, headers={"User-Agent":user_agent}, cookies=cookie)
+    # print(response.text)
+    # print(response.url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    url = soup.find_all('a')[7].attrs['href']
+    # 打卡Post Url
+    daka_url = "https://htu.banjimofang.com"+url
+
+    # 学院和年纪
+    college = soup.find_all('a')[1].text
+
+    # 包含名字的字符串
+    strIncName = soup.find_all("script")[0].string
+    start = strIncName.find("uname")+7
+    end = strIncName.find("'", start)
+    # 截取名字字符串
+    name = strIncName[start: end]
+
+    userInfo = {
+        "daka_post_url": daka_url,
+        "college": college,
+        "name": name
+    }
+    return userInfo
+
+# 签到
 def sign():
     session = requests.session()
     config = configparser.RawConfigParser()
     config.read("./config/config.txt", encoding="UTF-8")
     version = getVersion()
     # 登录
-    Info = Login()
+    cookie = Login.Login()
     # 登录失败
-    if Info == False:
+    if cookie == False:
         sendMail(None, None, config, version, False)
         return False
-
-    print(Info)
+    # 获取用户信息
+    Info = getUserInfo(cookie)
+    # 打印提示信息
     print(f"你好，来自 {Info['college']} 的 {Info['name']} !")
-    # Post APi
+    # get Post APi
     postUrl = Info["daka_post_url"]
-    # 签到
-    # cookies
-    cookies = Info["cookies"]
-    form_id = getFormId(postUrl, cookies)
-    signRes = Post(session, postUrl, config, cookies, form_id)
+    form_id = getFormId(postUrl, cookie)
+    # check in
+    signRes = Post(session, postUrl, config, cookie, form_id)
     
     # 打印用户提示信息
     msg = Msg(signRes)
