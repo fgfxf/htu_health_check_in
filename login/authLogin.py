@@ -154,7 +154,7 @@ def GetydxgCookie(cookielist):
 
     #第一次访问
     response=GetRedirects("http://authserver2.htu.edu.cn/authserver/login?service=http://ydxg.htu.edu.cn/land/caslogin?ref=/quickgo/x8k58999",cookie,UA)
-    Location=response.headers['Location'] #http://ydxg.htu.edu.cn/land/caslogin?ref=/quickgo/x8k58999&ticket=ST-280150-fPL4zBh9BPi9CmhxMXVw1629889259247-3jgP-cas
+    Location=response.headers['Location'] #http://ydxg.htu.edu.cn/land/caslogin?ref=/quickgo/x8k58999&ticket=ST-280150-fPL259247-3jgP-cas
 
     #第二次访问
     response=GetRedirects(Location,cookie,UA)
@@ -171,7 +171,7 @@ def GetydxgCookie(cookielist):
     #第四次访问
     ydxg= "http://ydxg.htu.edu.cn"+Location
     response=GetRedirects(ydxg,cookie,UA)
-    Location=response.headers['Location']#http://htu.banjimofang.com/student/loginbyno/1493/1828324038?secode=x8k58999&sign=1629889276-38714-0-0b42a0dc2be90a679d2bfa0ca55c30fb
+    Location=response.headers['Location']#http://htu.banjimofang.com/sby493/学号8?secode=x8k58999&sign=token-38714-0-0b42a0dc2be9b
 
     #第五次访问
     cookie=cookielist['CASTGC']
